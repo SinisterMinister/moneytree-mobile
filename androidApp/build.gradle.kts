@@ -12,6 +12,11 @@ dependencies {
     implementation("com.google.android.material:material:1.2.1")
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("androidx.constraintlayout:constraintlayout:2.0.2")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+}
+
+repositories {
+    maven("https://jitpack.io")
 }
 
 android {
@@ -28,4 +33,9 @@ android {
             isMinifyEnabled = false
         }
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    buildToolsVersion = "30.0.3"
 }

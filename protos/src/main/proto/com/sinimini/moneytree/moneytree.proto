@@ -2,14 +2,15 @@ syntax = "proto3";
 
 option go_package = "github.com/sinisterminister/moneytree/pkg/proto";
 option java_package = "com.sinimini.moneytree.proto";
+option java_outer_classname = "MoneytreeProto";
 
-package proto;
+package moneytree;
 
 service Moneytree {
     // Places an order pair in the system using the current price as the starting point.
     rpc PlacePair (PlacePairRequest) returns (PlacePairResponse);
-    rpc GetOpenOrders (NullRequest) returns (PairCollection);
-    rpc GetCandles(GetCandlesRequest) returns (GetCandlesResponse);
+    rpc GetOpenPairs (NullRequest) returns (PairCollection);
+    rpc GetCandles(GetCandlesRequest) returns (CandleCollection);
 }
 
 message NullRequest {}
@@ -28,7 +29,7 @@ message GetCandlesRequest {
     int64 endTime = 3;
 }
 
-message GetCandlesResponse {
+message CandleCollection {
     repeated Candle candles = 1;
 }
 
@@ -75,8 +76,8 @@ message Pair {
     string status = 6;
     string statusDetails = 7;
 
-    Order firstOrder = 8;
-    Order secondOrder = 9;
+    Order buyOrder = 8;
+    Order sellOrder = 9;
     Order reversalOrder = 10;
 }
 

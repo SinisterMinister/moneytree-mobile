@@ -8,40 +8,58 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-  <com.github.mikephil.charting.charts.CandleStickChart
-          android:id="@+id/candle_stick_chart"
-          android:layout_width="395dp"
-          android:layout_height="300dp"
-          app:layout_constraintTop_toBottomOf="@+id/textView"
-          app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-          android:layout_marginTop="16dp" app:layout_constraintBottom_toTopOf="@+id/upward"/>
   <TextView
           android:text="Moneytree"
           android:layout_width="wrap_content"
-          android:layout_height="wrap_content" android:id="@+id/textView"
+          android:layout_height="wrap_content" android:id="@+id/moneytree_title"
           android:textAppearance="@style/TextAppearance.AppCompat.Display2"
-          app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="28dp"
+          app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="16dp"
           app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintHorizontal_bias="0.498" android:textStyle="bold"/>
-  <Button
-          android:text="UP"
+          app:layout_constraintHorizontal_bias="0.497" android:textStyle="bold"/>
+
+  <com.github.mikephil.charting.charts.CandleStickChart
+          android:id="@+id/candle_stick_chart"
           android:layout_width="380dp"
-          android:layout_height="135dp" android:id="@+id/upward"
+          android:layout_height="214dp"
+          app:layout_constraintTop_toBottomOf="@+id/moneytree_title"
+          app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+          android:layout_marginTop="16dp"/>
+
+  <TextView
+          android:text="Open Pairs"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content" android:id="@+id/open_pairs_title"
+          android:textAppearance="@style/TextAppearance.AppCompat.Large"
+          android:textStyle="bold"
+          app:layout_constraintStart_toStartOf="parent"
+          android:layout_marginStart="16dp" app:layout_constraintTop_toBottomOf="@+id/candle_stick_chart"
+          android:layout_marginTop="16dp"/>
+
+  <de.codecrafters.tableview.TableView
+          android:id="@+id/open_pairs_table"
+          android:layout_width="380dp"
+          android:layout_height="250dp"
+          app:layout_constraintTop_toBottomOf="@+id/open_pairs_title"
           app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintHorizontal_bias="0.516"
-          app:layout_constraintBottom_toTopOf="@+id/downward" android:layout_marginBottom="16dp"
-          style="@style/Widget.AppCompat.Button.Colored"
-          android:textAppearance="@style/TextAppearance.AppCompat.Display3" android:textStyle="bold"
-          android:textSize="80sp" android:backgroundTint="#4CAF50"/>
+          android:layout_marginTop="16dp" app:layout_constraintHorizontal_bias="0.516"
+          app:tableView_columnCount="6"/>
   <Button
           android:text="DOWN"
-          android:layout_width="380dp"
-          android:layout_height="135dp" android:id="@+id/downward"
-          app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintHorizontal_bias="0.516"
+          android:layout_width="190dp"
+          android:layout_height="120dp" android:id="@+id/button_downward"
+          app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="16dp"
           style="@style/Widget.AppCompat.Button.Colored"
           android:textAppearance="@style/TextAppearance.AppCompat.Display3" android:textStyle="bold"
-          android:backgroundTint="#CF2F2F" android:textSize="80sp"/>
+          android:backgroundTint="#CF2F2F" android:textSize="50sp" android:layout_marginEnd="16dp"/>
+  <Button
+          android:text="UP"
+          android:layout_width="190dp"
+          android:layout_height="120dp" android:id="@+id/button_upward"
+          app:layout_constraintStart_toStartOf="parent"
+          style="@style/Widget.AppCompat.Button.Colored"
+          android:textAppearance="@style/TextAppearance.AppCompat.Display3" android:textStyle="bold"
+          android:textSize="50sp" android:backgroundTint="#4CAF50" android:layout_marginStart="16dp"
+          app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

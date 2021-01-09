@@ -12,4 +12,4 @@ rootProject.name = "moneytree-mobile"
 
 include(":androidApp")
 include(":shared")
-
+include(":protos")

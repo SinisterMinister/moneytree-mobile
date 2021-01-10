@@ -2,7 +2,6 @@ package com.sinimini.moneytree.androidApp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import de.codecrafters.tableview.TableView
 import de.codecrafters.tableview.toolkit.SimpleTableDataAdapter
 import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter
@@ -18,14 +17,13 @@ import java.lang.Exception
 
 import com.sinimini.moneytree.proto.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.ticker
 import java.net.URL
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.logging.Logger
 import org.ocpsoft.prettytime.PrettyTime
 import java.time.Instant
-import java.util.*
-import kotlin.concurrent.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -58,10 +56,6 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        launch {
-            delay(500)
-            refreshPairData()
-        }
     }
 
     fun sendDownPair() = runBlocking {
@@ -71,10 +65,6 @@ class MainActivity : AppCompatActivity() {
 
         } catch (e: Exception) {
             e.printStackTrace()
-        }
-        launch {
-            delay(500)
-            refreshPairData()
         }
     }
 
@@ -88,26 +78,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     suspend fun refreshPairData() {
-        val tableView= findViewById<TableView<Array<String>>>(R.id.open_pairs_table)
-        val p = PrettyTime()
         val pairs = getOpenPairs().pairsList
-        val data = mutableListOf<Array<String>>()
+        runOnUiThread {
+            val tableView = findViewById<TableView<Array<String>>>(R.id.open_pairs_table)
+            val p = PrettyTime()
 
-        for (pair in pairs) {
-            data.add(arrayOf(
-                p.format(LocalDateTime.ofEpochSecond(pair.created,0, (ZoneOffset.of("-7")))),
-                pair.direction,
-                pair.buyOrder.price,
-                pair.buyOrder.quantity,
-                pair.sellOrder.price,
-                pair.sellOrder.quantity,
-            ))
+            tableView.dataAdapter.clear()
+            for (pair in pairs) {
+                tableView.dataAdapter.add(
+                    arrayOf(
+                        p.format(LocalDateTime.ofEpochSecond(pair.created, 0, (ZoneOffset.of("-7")))),
+                        pair.direction,
+                        pair.buyOrder.price,
+                        pair.buyOrder.quantity,
+                        pair.sellOrder.price,
+                        pair.sellOrder.quantity,
+                    )
+                )
+            }
+            tableView.invalidate()
         }
-        val refreshAdapter = SimpleTableDataAdapter(this, data.toTypedArray())
-        refreshAdapter.setTextSize(10)
-        refreshAdapter.setPaddings(4,2, 4, 2)
-        refreshAdapter.setTextColor(resources.getColor(R.color.colorLight, null))
-        tableView.dataAdapter = refreshAdapter
     }
 
     suspend fun refreshCandleData() {
@@ -139,7 +129,7 @@ class MainActivity : AppCompatActivity() {
     suspend fun getCandleCollection(): MoneytreeProto.CandleCollection {
         try {
             val e = Instant.now()
-            val s = e.minusSeconds(60 * 90)
+            val s = e.minusSeconds(60 * 180)
             return moneytree.getCandles(MoneytreeProto.GetCandlesRequest.newBuilder()
                 .setDuration(MoneytreeProto.GetCandlesRequest.Duration.ONE_MINUTE)
                 .setStartTime(s.toEpochMilli().div(1000))
@@ -162,6 +152,11 @@ class MainActivity : AppCompatActivity() {
         headerAdpter.setTextColor(resources.getColor(R.color.colorLight, null))
         tableView.headerAdapter = headerAdpter
         tableView.setHeaderBackgroundColor(resources.getColor(R.color.colorDark, null))
+        val dataAdapter = SimpleTableDataAdapter(this, mutableListOf<Array<String>>())
+        dataAdapter.setTextSize(10)
+        dataAdapter.setPaddings(4,2, 4, 2)
+        dataAdapter.setTextColor(resources.getColor(R.color.colorLight, null))
+        tableView.dataAdapter = dataAdapter
         tableView.isSwipeToRefreshEnabled = true
         tableView.setSwipeToRefreshListener {
             runBlocking {
@@ -182,11 +177,19 @@ class MainActivity : AppCompatActivity() {
             upButton.isEnabled = false
             sendUpPair()
             upButton.isEnabled = true
+            GlobalScope.launch {
+                delay(1000)
+                refreshPairData()
+            }
         }
         downButton.setOnClickListener {
             downButton.isEnabled = false
             sendDownPair()
             downButton.isEnabled = true
+            GlobalScope.launch {
+                delay(1000)
+                refreshPairData()
+            }
         }
 
         // Setup the candlestick chart
@@ -211,11 +214,11 @@ class MainActivity : AppCompatActivity() {
         chart.xAxis.setDrawLabels(false)
         chart.xAxis.isGranularityEnabled = true
         chart.xAxis.granularity = 1f
-        Timer().scheduleAtFixedRate(0, 60 * 1000) {
-            runBlocking {
-                launch {
-                    refreshCandleData()
-                }
+        GlobalScope.launch {
+            val tickerChannel = ticker(delayMillis = 60 * 1000, initialDelayMillis = 0)
+            for (event in tickerChannel) {
+                refreshCandleData()
+                refreshPairData()
             }
         }
     }

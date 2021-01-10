@@ -9,6 +9,11 @@ import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter
 import io.grpc.ManagedChannelBuilder
 import io.grpc.ManagedChannel
 import android.widget.Button
+import com.github.mikephil.charting.charts.CandleStickChart
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.CandleData
+import com.github.mikephil.charting.data.CandleDataSet
+import com.github.mikephil.charting.data.CandleEntry
 import java.lang.Exception
 
 import com.sinimini.moneytree.proto.*
@@ -18,8 +23,9 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.logging.Logger
 import org.ocpsoft.prettytime.PrettyTime
-
-
+import java.time.Instant
+import java.util.*
+import kotlin.concurrent.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,11 +51,6 @@ class MainActivity : AppCompatActivity() {
 
     private val TABLE_HEADERS = arrayOf("Created", "Direction", "Buy Price", "Buy Qty", "Sell Price", "Sell Qty")
 
-    private val TABLE_DATA = arrayOf(
-        arrayOf("2020-12-30T12:11:11", "Upward", "27629.92", "0.01453420", "27712.81", "0.01451246"),
-        arrayOf("2020-12-30T11:40:23", "Downward", "27553.09", "0.01451237", "27636.00", "0.01449054"),
-    )
-
     fun sendUpPair() = runBlocking {
         try {
             val request = MoneytreeProto.PlacePairRequest.newBuilder().setDirection("UP").build()
@@ -59,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         }
         launch {
             delay(500)
-            refreshData()
+            refreshPairData()
         }
     }
 
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         }
         launch {
             delay(500)
-            refreshData()
+            refreshPairData()
         }
     }
 
@@ -86,8 +87,8 @@ class MainActivity : AppCompatActivity() {
         return MoneytreeProto.PairCollection.getDefaultInstance()
     }
 
-    suspend fun refreshData() {
-        val tableView: TableView<Array<String>> = findViewById<View>(R.id.open_pairs_table) as TableView<Array<String>>
+    suspend fun refreshPairData() {
+        val tableView= findViewById<TableView<Array<String>>>(R.id.open_pairs_table)
         val p = PrettyTime()
         val pairs = getOpenPairs().pairsList
         val data = mutableListOf<Array<String>>()
@@ -105,8 +106,49 @@ class MainActivity : AppCompatActivity() {
         val refreshAdapter = SimpleTableDataAdapter(this, data.toTypedArray())
         refreshAdapter.setTextSize(10)
         refreshAdapter.setPaddings(4,2, 4, 2)
-        refreshAdapter.setTextColor(resources.getColor(R.color.colorHeaderForeground, null))
+        refreshAdapter.setTextColor(resources.getColor(R.color.colorLight, null))
         tableView.dataAdapter = refreshAdapter
+    }
+
+    suspend fun refreshCandleData() {
+        val chart = findViewById<CandleStickChart>(R.id.candle_stick_chart)
+        val candles = getCandleCollection().candlesList.reversed()
+        val data = mutableListOf<CandleEntry>()
+        var start = 0L
+
+        for (candle in candles) {
+            if (start == 0L) {
+                start = candle.ts
+            }
+            data.add(CandleEntry(candle.ts.minus(start).div(60).toFloat(), candle.high.toFloat(), candle.low.toFloat(), candle.open.toFloat(), candle.close.toFloat()))
+        }
+
+        val candleDataSet = CandleDataSet(data, "Price")
+        candleDataSet.increasingColor = resources.getColor(R.color.colorGreen, null)
+        candleDataSet.decreasingColor = resources.getColor(R.color.colorRed, null)
+        candleDataSet.valueTextColor = resources.getColor(R.color.colorLight, null)
+        candleDataSet.axisDependency = YAxis.AxisDependency.RIGHT
+        candleDataSet.isHighlightEnabled = true
+        candleDataSet.shadowColorSameAsCandle = true
+        candleDataSet.setDrawValues(false)
+        val candleData = CandleData(candleDataSet)
+        chart.data = candleData
+        chart.invalidate()
+    }
+
+    suspend fun getCandleCollection(): MoneytreeProto.CandleCollection {
+        try {
+            val e = Instant.now()
+            val s = e.minusSeconds(60 * 90)
+            return moneytree.getCandles(MoneytreeProto.GetCandlesRequest.newBuilder()
+                .setDuration(MoneytreeProto.GetCandlesRequest.Duration.ONE_MINUTE)
+                .setStartTime(s.toEpochMilli().div(1000))
+                .setEndTime(e.toEpochMilli().div(1000))
+                .build())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return MoneytreeProto.CandleCollection.getDefaultInstance()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,38 +156,66 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Setup the Open Orders Table
-        val tableView: TableView<Array<String>> = findViewById<View>(R.id.open_pairs_table) as TableView<Array<String>>
+        val tableView = findViewById<TableView<Array<String>>>(R.id.open_pairs_table)
         val headerAdpter = SimpleTableHeaderAdapter(this, *TABLE_HEADERS)
         headerAdpter.setTextSize(10)
-        headerAdpter.setTextColor(resources.getColor(R.color.colorHeaderForeground, null))
+        headerAdpter.setTextColor(resources.getColor(R.color.colorLight, null))
         tableView.headerAdapter = headerAdpter
-        tableView.setHeaderBackgroundColor(resources.getColor(R.color.colorHeaderBackground, null))
+        tableView.setHeaderBackgroundColor(resources.getColor(R.color.colorDark, null))
         tableView.isSwipeToRefreshEnabled = true
         tableView.setSwipeToRefreshListener {
             runBlocking {
-                refreshData()
+                refreshPairData()
             }
             it.hide()
         }
+        runBlocking {
+            launch {
+                refreshPairData()
+            }
+        }
 
+        // Setup pair submission buttons
         val downButton = findViewById<Button>(R.id.button_downward)
         val upButton = findViewById<Button>(R.id.button_upward)
-
         upButton.setOnClickListener {
             upButton.isEnabled = false
             sendUpPair()
             upButton.isEnabled = true
         }
-
         downButton.setOnClickListener {
             downButton.isEnabled = false
             sendDownPair()
             downButton.isEnabled = true
         }
 
-        runBlocking {
-            launch {
-                refreshData()
+        // Setup the candlestick chart
+        val chart = findViewById<CandleStickChart>(R.id.candle_stick_chart)
+        chart.description.isEnabled = false
+        chart.legend.isEnabled = false
+        chart.setBackgroundColor(resources.getColor(R.color.colorDark, null))
+        chart.setNoDataTextColor(resources.getColor(R.color.colorLight, null))
+        chart.requestDisallowInterceptTouchEvent(true)
+        chart.setDrawBorders(false)
+        chart.axisRight.textColor = resources.getColor(R.color.colorLight, null)
+        chart.axisRight.axisLineColor = resources.getColor(R.color.colorGrey, null)
+        chart.axisRight.gridColor =  resources.getColor(R.color.colorGrey, null)
+        chart.axisLeft.textColor = resources.getColor(R.color.colorLight, null)
+        chart.axisLeft.axisLineColor = resources.getColor(R.color.colorGrey, null)
+        chart.axisLeft.setDrawLabels(false)
+        chart.axisLeft.setDrawGridLines(false)
+        chart.xAxis.textColor = resources.getColor(R.color.colorLight, null)
+        chart.xAxis.axisLineColor = resources.getColor(R.color.colorGrey, null)
+        chart.xAxis.gridColor =  resources.getColor(R.color.colorGrey, null)
+        chart.xAxis.setDrawAxisLine(true)
+        chart.xAxis.setDrawLabels(false)
+        chart.xAxis.isGranularityEnabled = true
+        chart.xAxis.granularity = 1f
+        Timer().scheduleAtFixedRate(0, 60 * 1000) {
+            runBlocking {
+                launch {
+                    refreshCandleData()
+                }
             }
         }
     }

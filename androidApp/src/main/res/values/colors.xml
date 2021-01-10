@@ -3,6 +3,10 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
-    <color name="colorHeaderBackground">#111111</color>
-    <color name="colorHeaderForeground">#EEEEEE</color>
+    <color name="colorDark">#111111</color>
+    <color name="colorLight">#EEEEEE</color>
+    <color name="colorGrey">#777777</color>
+    <color name="colorRed">#CF2F2F</color>
+    <color name="colorGreen">#4CAF50</color>
+
 </resources>

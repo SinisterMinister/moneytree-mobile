@@ -214,10 +214,20 @@ class MainActivity : AppCompatActivity() {
         chart.xAxis.setDrawLabels(false)
         chart.xAxis.isGranularityEnabled = true
         chart.xAxis.granularity = 1f
+
+        // Refresh the candle data every minute
         GlobalScope.launch {
             val tickerChannel = ticker(delayMillis = 60 * 1000, initialDelayMillis = 0)
             for (event in tickerChannel) {
                 refreshCandleData()
+                refreshPairData()
+            }
+        }
+
+        // Refresh the ticker data every 5 seconds
+        GlobalScope.launch {
+            val tickerChannel = ticker(delayMillis = 5 * 1000, initialDelayMillis = 0)
+            for (event in tickerChannel) {
                 refreshPairData()
             }
         }

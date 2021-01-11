@@ -57,7 +57,7 @@ android {
         if (serverUrl != null) {
             resValue("string", "server_url", serverUrl!!)
         } else {
-            resValue("string", "server_url", "http://10.128.10.35:44444/")
+            resValue("string", "server_url", "http://moneytree.sinimini.com:44444/")
         }
     }
     buildTypes {

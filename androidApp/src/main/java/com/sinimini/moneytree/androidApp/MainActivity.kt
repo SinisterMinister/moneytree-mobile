@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity() {
 
         // Refresh the candle data every minute
         GlobalScope.launch {
-            val tickerChannel = ticker(delayMillis = 60 * 1000, initialDelayMillis = 0)
+            val tickerChannel = ticker(delayMillis = 15 * 1000, initialDelayMillis = 0)
             for (event in tickerChannel) {
                 refreshCandleData()
                 refreshPairData()

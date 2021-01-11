@@ -38,11 +38,11 @@
   <de.codecrafters.tableview.TableView
           android:id="@+id/open_pairs_table"
           android:layout_width="390dp"
-          android:layout_height="200dp"
+          android:layout_height="160dp"
           app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintHorizontal_bias="0.516"
           app:tableView_columnCount="6" app:layout_constraintBottom_toTopOf="@+id/button_upward"
-          android:layout_marginBottom="20dp" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"/>
+          android:layout_marginBottom="20dp"/>
   <Button
           android:text="DOWN"
           android:layout_width="0dp"
@@ -66,6 +66,8 @@
   <androidx.constraintlayout.widget.Guideline
           android:orientation="vertical"
           android:layout_width="wrap_content"
-          android:layout_height="wrap_content" android:id="@+id/guideline" app:layout_constraintGuide_end="206dp"/>
+          android:layout_height="wrap_content" android:id="@+id/guideline" app:layout_constraintGuide_end="205dp"
+          app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+          android:layout_marginStart="207dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

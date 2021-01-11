@@ -26,3 +26,4 @@ captures/
 *.iml
 *.iws
 *.ipr
+*.hprof

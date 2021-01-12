@@ -24,7 +24,7 @@ import java.time.ZoneOffset
 import java.util.logging.Logger
 import org.ocpsoft.prettytime.PrettyTime
 import java.time.Instant
-
+import de.codecrafters.tableview.model.TableColumnWeightModel
 
 class MainActivity : AppCompatActivity() {
     private val logger = Logger.getLogger(this.javaClass.name)
@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
     suspend fun getCandleCollection(): MoneytreeProto.CandleCollection {
         try {
             val e = Instant.now()
-            val s = e.minusSeconds(60 * 180)
+            val s = e.minusSeconds(60 * 90)
             return moneytree.getCandles(MoneytreeProto.GetCandlesRequest.newBuilder()
                 .setDuration(MoneytreeProto.GetCandlesRequest.Duration.ONE_MINUTE)
                 .setStartTime(s.toEpochMilli().div(1000))
@@ -147,13 +147,21 @@ class MainActivity : AppCompatActivity() {
 
         // Setup the Open Orders Table
         val tableView = findViewById<TableView<Array<String>>>(R.id.open_pairs_table)
+        val columnModel = TableColumnWeightModel(6)
+        columnModel.setColumnWeight(0, 6)
+        columnModel.setColumnWeight(1, 4)
+        columnModel.setColumnWeight(2, 5)
+        columnModel.setColumnWeight(3, 5)
+        columnModel.setColumnWeight(4, 5)
+        columnModel.setColumnWeight(5, 5)
+        tableView.columnModel = columnModel
         val headerAdpter = SimpleTableHeaderAdapter(this, *TABLE_HEADERS)
-        headerAdpter.setTextSize(10)
+        headerAdpter.setTextSize(11)
         headerAdpter.setTextColor(resources.getColor(R.color.colorLight, null))
         tableView.headerAdapter = headerAdpter
         tableView.setHeaderBackgroundColor(resources.getColor(R.color.colorDark, null))
         val dataAdapter = SimpleTableDataAdapter(this, mutableListOf<Array<String>>())
-        dataAdapter.setTextSize(10)
+        dataAdapter.setTextSize(11)
         dataAdapter.setPaddings(4,2, 4, 2)
         dataAdapter.setTextColor(resources.getColor(R.color.colorLight, null))
         tableView.dataAdapter = dataAdapter
@@ -203,21 +211,26 @@ class MainActivity : AppCompatActivity() {
         chart.axisRight.textColor = resources.getColor(R.color.colorLight, null)
         chart.axisRight.axisLineColor = resources.getColor(R.color.colorGrey, null)
         chart.axisRight.gridColor =  resources.getColor(R.color.colorGrey, null)
+        chart.axisRight.setDrawLabels(true)
+        chart.axisRight.setDrawGridLines(false)
+        chart.axisRight.setDrawAxisLine(true)
         chart.axisLeft.textColor = resources.getColor(R.color.colorLight, null)
         chart.axisLeft.axisLineColor = resources.getColor(R.color.colorGrey, null)
         chart.axisLeft.setDrawLabels(false)
         chart.axisLeft.setDrawGridLines(false)
+        chart.axisLeft.setDrawAxisLine(false)
         chart.xAxis.textColor = resources.getColor(R.color.colorLight, null)
         chart.xAxis.axisLineColor = resources.getColor(R.color.colorGrey, null)
         chart.xAxis.gridColor =  resources.getColor(R.color.colorGrey, null)
-        chart.xAxis.setDrawAxisLine(true)
+        chart.xAxis.setDrawAxisLine(false)
         chart.xAxis.setDrawLabels(false)
+        chart.xAxis.setDrawGridLines(false)
         chart.xAxis.isGranularityEnabled = true
         chart.xAxis.granularity = 1f
 
         // Refresh the candle data every minute
         GlobalScope.launch {
-            val tickerChannel = ticker(delayMillis = 15 * 1000, initialDelayMillis = 0)
+            val tickerChannel = ticker(delayMillis = 5 * 1000, initialDelayMillis = 0)
             for (event in tickerChannel) {
                 refreshCandleData()
                 refreshPairData()
@@ -226,7 +239,7 @@ class MainActivity : AppCompatActivity() {
 
         // Refresh the ticker data every 5 seconds
         GlobalScope.launch {
-            val tickerChannel = ticker(delayMillis = 5 * 1000, initialDelayMillis = 0)
+            val tickerChannel = ticker(delayMillis = 2500, initialDelayMillis = 0)
             for (event in tickerChannel) {
                 refreshPairData()
             }

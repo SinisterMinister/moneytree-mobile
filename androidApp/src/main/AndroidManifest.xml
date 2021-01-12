@@ -3,8 +3,9 @@
     <application
             android:allowBackup="false"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+            android:theme="@style/AppTheme"
+            android:icon="@mipmap/ic_launcher">
+        <activity android:name=".MainActivity" android:label="Moneytree">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

@@ -27,3 +27,5 @@ captures/
 *.iws
 *.ipr
 *.hprof
+
+keystore.properties

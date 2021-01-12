@@ -3,6 +3,7 @@ import com.google.protobuf.gradle.id
 import com.google.protobuf.gradle.plugins
 import com.google.protobuf.gradle.protobuf
 import com.google.protobuf.gradle.protoc
+import org.jetbrains.kotlin.konan.properties.loadProperties
 
 plugins {
     id("com.android.application")
@@ -11,10 +12,11 @@ plugins {
     id("com.google.protobuf") version "0.8.14"
     idea
 }
-
 group = "com.sinimini.moneytree"
 version = "1.0-SNAPSHOT"
 
+// Load your keystore.properties file into the keystoreProperties object.
+val keystoreProperties = loadProperties(rootProject.rootDir.absolutePath + "/keystore.properties")
 
 dependencies {
     implementation(project(":shared"))
@@ -60,9 +62,18 @@ android {
             resValue("string", "server_url", "http://moneytree.sinimini.com:44444/")
         }
     }
+    signingConfigs {
+        create("release") {
+            storeFile = file(rootProject.rootDir.absolutePath + "/" + keystoreProperties.getProperty("storeFile"))
+            storePassword = keystoreProperties.getProperty("storePassword")
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+        }
+    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

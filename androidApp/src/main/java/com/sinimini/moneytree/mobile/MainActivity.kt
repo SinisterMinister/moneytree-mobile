@@ -1,4 +1,4 @@
-package com.sinimini.moneytree.androidApp
+package com.sinimini.moneytree.mobile
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +8,7 @@ import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter
 import io.grpc.ManagedChannelBuilder
 import io.grpc.ManagedChannel
 import android.widget.Button
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.github.mikephil.charting.charts.CandleStickChart
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.CandleData
@@ -144,6 +145,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val layout = findViewById<ConstraintLayout>(R.id.main_view)
+        layout.setBackgroundColor(resources.getColor(R.color.colorPrimaryDark, null))
 
         // Setup the Open Orders Table
         val tableView = findViewById<TableView<Array<String>>>(R.id.open_pairs_table)
@@ -204,7 +207,7 @@ class MainActivity : AppCompatActivity() {
         val chart = findViewById<CandleStickChart>(R.id.candle_stick_chart)
         chart.description.isEnabled = false
         chart.legend.isEnabled = false
-        chart.setBackgroundColor(resources.getColor(R.color.colorDark, null))
+        chart.setBackgroundColor(resources.getColor(R.color.colorPrimaryDark, null))
         chart.setNoDataTextColor(resources.getColor(R.color.colorLight, null))
         chart.requestDisallowInterceptTouchEvent(true)
         chart.setDrawBorders(false)

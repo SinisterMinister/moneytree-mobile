@@ -6,7 +6,8 @@
         android:id="@+id/main_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".MainActivity"
+        android:theme="@style/AppTheme">
 
   <TextView
           android:text="Moneytree"
@@ -50,7 +51,7 @@
           app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="16dp"
           style="@style/Widget.AppCompat.Button.Colored"
           android:textAppearance="@style/TextAppearance.AppCompat.Display3" android:textStyle="bold"
-          android:backgroundTint="#CF2F2F" android:textSize="50sp" android:layout_marginEnd="16dp"
+          android:backgroundTint="@color/colorRed" android:textSize="50sp" android:layout_marginEnd="16dp"
           app:layout_constraintStart_toEndOf="@+id/button_upward"/>
   <Button
           android:text="UP"
@@ -59,7 +60,7 @@
           app:layout_constraintStart_toStartOf="parent"
           style="@style/Widget.AppCompat.Button.Colored"
           android:textAppearance="@style/TextAppearance.AppCompat.Display3" android:textStyle="bold"
-          android:textSize="50sp" android:backgroundTint="#4CAF50" android:layout_marginStart="16dp"
+          android:textSize="50sp" android:backgroundTint="@color/colorGreen" android:layout_marginStart="16dp"
           app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="16dp"
           app:layout_constraintEnd_toStartOf="@+id/button_downward"/>
 

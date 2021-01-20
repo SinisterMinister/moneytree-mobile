@@ -49,11 +49,12 @@ repositories {
 android {
     compileSdkVersion(29)
     defaultConfig {
-        applicationId = "com.sinimini.moneytree.androidApp"
+        applicationId = "com.sinimini.moneytree.mobile"
         minSdkVersion(24)
         targetSdkVersion(29)
         versionCode = 1
         versionName = "1.0"
+
 
         val serverUrl: String? by project
         if (serverUrl != null) {

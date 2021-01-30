@@ -2,6 +2,7 @@ package com.sinimini.moneytree.mobile
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
 import de.codecrafters.tableview.TableView
 import de.codecrafters.tableview.toolkit.SimpleTableDataAdapter
 import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter
@@ -119,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         candleDataSet.decreasingColor = resources.getColor(R.color.colorRed, null)
         candleDataSet.valueTextColor = resources.getColor(R.color.colorLight, null)
         candleDataSet.axisDependency = YAxis.AxisDependency.RIGHT
-        candleDataSet.isHighlightEnabled = true
+        candleDataSet.isHighlightEnabled = false
         candleDataSet.shadowColorSameAsCandle = true
         candleDataSet.setDrawValues(false)
         val candleData = CandleData(candleDataSet)
@@ -145,6 +146,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Prevent the screen from sleeping
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        // Set the background color
         val layout = findViewById<ConstraintLayout>(R.id.main_view)
         layout.setBackgroundColor(resources.getColor(R.color.colorPrimaryDark, null))
 

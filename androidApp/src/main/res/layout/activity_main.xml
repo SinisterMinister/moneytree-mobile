@@ -16,7 +16,7 @@
           android:textAppearance="@style/TextAppearance.AppCompat.Display2"
           app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="16dp"
           app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintHorizontal_bias="0.497" android:textStyle="bold"/>
+          app:layout_constraintHorizontal_bias="0.497" android:textStyle="bold" android:textColor="@color/colorLight"/>
 
   <com.github.mikephil.charting.charts.CandleStickChart
           android:id="@+id/candle_stick_chart"
@@ -35,7 +35,8 @@
           android:textStyle="bold"
           app:layout_constraintStart_toStartOf="parent"
           android:layout_marginStart="16dp"
-          app:layout_constraintBottom_toTopOf="@+id/open_pairs_table" android:layout_marginBottom="16dp"/>
+          app:layout_constraintBottom_toTopOf="@+id/open_pairs_table" android:layout_marginBottom="16dp"
+          android:textColor="@color/colorLight"/>
   <de.codecrafters.tableview.TableView
           android:id="@+id/open_pairs_table"
           android:layout_width="456dp"
